@@ -1,8 +1,17 @@
 # Robanis marketing site
 
-Marketing site for Robanis, an IT solutions consultancy running two agentic
-service lines: agentic system integration and agentic SEO optimization.
-Laravel + Blade, Tailwind CSS 4 + daisyUI 5, MySQL.
+Marketing site for Robanis, an IT solutions consultancy running three
+service lines: agentic SEO, agentic AI, and software solutions. Laravel +
+Blade, Tailwind CSS 4 + daisyUI 5, MySQL.
+
+## Documentation
+
+- **[DESIGN.md](DESIGN.md)** — the design system: palette, themes, type,
+  motion, voice and the component catalogue. Read before changing anything
+  user-facing.
+- **[AGENTS.md](AGENTS.md)** — technical conventions, architecture map, and
+  gotchas hit while building this. Read before changing code. (`CLAUDE.md`
+  imports it, so Claude Code loads the same rules automatically.)
 
 ## Requirements
 
@@ -149,3 +158,69 @@ php artisan test
 Covers page rendering (one `<h1>` per page, tier query-param handling) and
 lead submission (validation, honeypot, throttling) — see
 `tests/Feature/PagesTest.php` and `tests/Feature/LeadTest.php`.
+
+## Deploying to cPanel
+
+Laravel expects the webserver's document root to point at `public/`, but
+cPanel's default document root is `public_html`, and shared hosting usually
+gives you no way to change that for the primary domain. Two options:
+
+**A. You can set a custom document root** (an addon domain, a subdomain, or
+a host that allows changing the primary domain's docroot in
+*Domains*): upload the whole app anywhere in your home directory (e.g.
+`~/robanis`) and point the domain's document root at `~/robanis/public`.
+Nothing else in this section changes.
+
+**B. You're stuck with `public_html`**: upload the app to a folder *outside*
+and *above* `public_html` (e.g. `~/robanis`, a sibling of `public_html`, not
+inside it), then:
+1. Copy the *contents* of `~/robanis/public/` into `public_html/`
+   (`index.php`, `.htaccess`, `favicon.ico`, `robots.txt`, `build/`).
+2. Edit `public_html/index.php` — it has three `__DIR__.'/../...'` paths
+   (the maintenance-mode check, `vendor/autoload.php`, and
+   `bootstrap/app.php`). Change `../` to `../robanis/` (or wherever you
+   uploaded the app) in all three, so they resolve to
+   `~/robanis/storage/...`, `~/robanis/vendor/autoload.php` and
+   `~/robanis/bootstrap/app.php`.
+
+Either way:
+
+1. **Build locally first** (this repo, not the server) — `composer install
+   --no-dev --optimize-autoloader` and `npm run build`. `vendor/`,
+   `node_modules/` and `public/build/` are all gitignored, so they won't
+   exist on the server until you either upload them or run the equivalent
+   commands there. `node_modules/` itself never needs to go to the server —
+   only the built output in `public/build/`.
+2. **Do not upload your local `.env`.** Create a fresh `.env` directly on
+   the server (cPanel File Manager, or `vi .env` over SSH) using
+   `.env.production.example` as the starting point — copy it, don't reuse
+   it verbatim, since it has no `APP_KEY` and placeholder DB credentials.
+   Get the real `DB_DATABASE`/`DB_USERNAME`/`DB_PASSWORD` from cPanel's
+   *MySQL Databases* tool (it prefixes both with your cPanel username) and
+   set `APP_URL` to your real domain.
+3. Generate a key **for that file specifically** — `php artisan
+   key:generate` if you have terminal/SSH access, otherwise run it locally
+   with `--show` and paste the result into `APP_KEY` by hand. Never reuse
+   one `APP_KEY` across two `.env` files.
+4. If you have terminal/SSH access (cPanel's *Terminal* app, or real SSH),
+   from the app directory run, in order:
+   ```bash
+   php artisan migrate --force
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+   `--force` is required because `APP_ENV=production` otherwise refuses to
+   run migrations without an interactive prompt. Run the three `cache`
+   commands *after* `.env` is final on the server — they bake the current
+   config into `bootstrap/cache/`, so re-run them any time `.env` changes.
+   If you don't have terminal access, skip the three cache commands (the
+   app runs fine without them, just slightly slower) and run the migration
+   once by temporarily adding a one-off protected route, or ask your host
+   to enable Terminal.
+5. `storage/` and `bootstrap/cache/` must be writable by the webserver —
+   `chmod -R 775 storage bootstrap/cache` if you have terminal access, or
+   set permissions to 775 on those two folders (and everything under
+   `storage/`) via cPanel File Manager otherwise.
+6. Confirm PHP 8.2+ is selected for the domain in cPanel's *MultiPHP
+   Manager* — this app won't boot on an older default.

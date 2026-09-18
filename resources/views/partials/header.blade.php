@@ -7,7 +7,7 @@
     $onService = fn (string $slug) => request()->routeIs('services.show') && request()->route('service') === $slug;
 @endphp
 
-<header data-header class="sticky top-0 z-40 bg-transparent">
+<header data-header class="sticky top-0 z-40 bg-base-100">
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         <a href="{{ route('home') }}" class="text-lg tracking-tight">
             Robanis<span class="text-primary">/</span>

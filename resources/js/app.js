@@ -34,8 +34,9 @@ function initThemeToggle() {
 }
 
 /**
- * Header gains a hairline bottom border once the page has scrolled past
- * the hero, so it reads as transparent-over-hero and solid elsewhere.
+ * Header is always solid (bg-base-100 in the markup — never bg-transparent,
+ * see AGENTS.md gotchas for why). This only adds a hairline bottom border
+ * once the page has scrolled, as the sole visual signal for "scrolled".
  */
 function initHeaderScroll() {
     const header = document.querySelector('[data-header]');
