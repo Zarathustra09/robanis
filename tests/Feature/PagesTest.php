@@ -78,3 +78,11 @@ test('the why us page shows the founder quote', function () {
     $response->assertSee('Heal Joshua C. Pardo');
     $response->assertSee('resilient as a mighty tree', false);
 });
+
+test('the theme defaults to light and ignores the OS colour scheme', function () {
+    $response = $this->get('/');
+
+    $response->assertOk();
+    $response->assertSee("'robanis-light'", false);
+    $response->assertDontSee('prefers-color-scheme', false);
+});

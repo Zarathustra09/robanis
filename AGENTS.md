@@ -152,9 +152,15 @@ at the bottom of the file:
   `[data-reveal]` elements once, then unobserves them.
 
 The theme itself is set **before** any of this runs, by a blocking inline
-`<script>` in `layouts/app.blade.php`'s `<head>` (reads `localStorage`,
-falls back to `prefers-color-scheme`), so there's no flash of the wrong
-theme.
+`<script>` in `layouts/app.blade.php`'s `<head>`, so there's no flash of
+the wrong theme. **Light is the default**: the script picks
+`robanis-dark` only if `localStorage['robanis-theme']` is exactly
+`robanis-dark` (i.e. the visitor chose it with the toggle) and
+`robanis-light` otherwise. It deliberately does **not** read
+`prefers-color-scheme`, and `robanis-dark` has `prefersdark: false` in
+`app.css` for the same reason — don't re-enable either without being
+asked, or no-JS visitors and first-time visitors with a dark OS will get
+dark mode again.
 
 ## How-to recipes
 
@@ -244,7 +250,8 @@ table in DESIGN.md.
   route. Covers the Services dropdown listing all three lines, each service
   page showing all four tier names in order with no `₱` anywhere, the
   `/services#approach` anchor existing, tier query-param whitelisting on
-  Contact, and the Why us founder quote.
+  Contact, the Why us founder quote, and that the inline theme script
+  defaults to `robanis-light` without reading `prefers-color-scheme`.
 - `tests/Feature/LeadTest.php` — valid submit, invalid email, over-length
   message, honeypot (silently drops, still shows success), unknown
   `tier_interest` rejected, and throttling (6th request in a minute → 429).

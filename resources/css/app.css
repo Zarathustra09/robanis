@@ -103,7 +103,7 @@
 @plugin 'daisyui/theme' {
     name: 'robanis-dark';
     default: false;
-    prefersdark: true;
+    prefersdark: false;
     color-scheme: dark;
 
     --color-base-100: oklch(23.57% 0.0174 170.39); /* Ink #16211D */

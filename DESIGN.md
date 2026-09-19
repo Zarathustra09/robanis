@@ -38,8 +38,11 @@ For routes, controllers, config and JS architecture, see [AGENTS.md](AGENTS.md).
 
 Two daisyUI 5 themes, defined in `resources/css/app.css` via
 `@plugin "daisyui/theme"` (Tailwind 4 CSS-first syntax — there is no
-`tailwind.config.js`). `robanis-light` is the default; `robanis-dark` sets
-`prefersdark: true` so it also matches `prefers-color-scheme: dark`.
+`tailwind.config.js`). **`robanis-light` is the default for every visitor.**
+The OS colour scheme is ignored on purpose: `robanis-dark` has
+`prefersdark: false`, and the inline theme script in the layout falls back
+to light. Dark mode is opt-in through the header toggle only, and the
+choice is remembered in `localStorage`.
 
 ### robanis-light
 

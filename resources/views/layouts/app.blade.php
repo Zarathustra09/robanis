@@ -7,12 +7,13 @@
     <meta name="description" content="@yield('description', 'Robanis builds agentic system integrations and agentic SEO for the AI search era.')">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    {{-- Blocking, so the theme is set before first paint — no flash of the wrong theme. --}}
+    {{-- Blocking, so the theme is set before first paint — no flash of the wrong theme.
+         Light is the default for everyone; dark only applies after a visitor picks it
+         with the header toggle (stored in localStorage). The OS colour scheme is ignored. --}}
     <script>
         (function () {
             try {
-                var stored = localStorage.getItem('robanis-theme');
-                var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'robanis-dark' : 'robanis-light');
+                var theme = localStorage.getItem('robanis-theme') === 'robanis-dark' ? 'robanis-dark' : 'robanis-light';
                 document.documentElement.setAttribute('data-theme', theme);
             } catch (e) {
                 document.documentElement.setAttribute('data-theme', 'robanis-light');

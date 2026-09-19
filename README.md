@@ -98,8 +98,9 @@ level rather than per component.
 
 The theme is set on `<html data-theme>` by a blocking inline script in
 `resources/views/layouts/app.blade.php` (before Tailwind loads), so there's
-no flash of the wrong theme. It respects `prefers-color-scheme` on first
-visit and then persists the user's choice (via the header toggle) to
+no flash of the wrong theme. **Light is the default for everyone** — the
+OS colour scheme is deliberately ignored. Dark mode only applies once a
+visitor picks it with the header toggle, and that choice is persisted to
 `localStorage`.
 
 The base font size is bumped to 18px (`html { font-size: 112.5% }` in
